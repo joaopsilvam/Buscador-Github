@@ -6,14 +6,17 @@ import 'home_page.dart';
 class HomeModule extends Module {
   @override
   List<Bind> get binds => [
-        Bind.lazySingleton((i) => HomeBloc()), // Vincula o Bloc ao módulo
+        Bind.lazySingleton((i) => HomeBloc()), // Fornece o HomeBloc
       ];
 
   @override
   List<ModularRoute> get routes => [
-        ChildRoute('/', child: (_, __) => BlocProvider(
-              create: (_) => Modular.get<HomeBloc>(), // Usa o Bloc para gerenciar estados
-              child: HomePage(),
-            )),
+        ChildRoute(
+          '/',
+          child: (_, __) => BlocProvider(
+            create: (context) => Modular.get<HomeBloc>(),
+            child: HomePage(),
+          ),
+        ),
       ];
 }
