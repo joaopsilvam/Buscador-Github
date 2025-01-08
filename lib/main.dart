@@ -1,7 +1,10 @@
+import 'package:buscador_github/app_module.dart';
+import 'package:buscador_github/app_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ModularApp(module: AppModule(), child: AppWidget()));
 }
 
 class MyApp extends StatelessWidget {
