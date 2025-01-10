@@ -33,27 +33,41 @@ class SaveSearchEvent extends HomeEvent {
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState()) {
     // Registra o handler para SaveSearchEvent
-    on<SaveSearchEvent>((event, emit) {
-      final updatedSuggestions = List<String>.from(state.suggestions);
+    on<SaveSearchEvent>(_handleSaveSearchEvent);
+  }
 
-      // Adiciona o novo nome, evitando duplicatas
-      if (!updatedSuggestions.contains(event.username)) {
-        updatedSuggestions.add(event.username);
+  void _handleSaveSearchEvent(SaveSearchEvent event, Emitter<HomeState> emit) {
+  final updatedSuggestions = List<String>.from(state.suggestions);
 
-        // Mantém apenas as últimas 5 sugestões
-        if (updatedSuggestions.length > 5) updatedSuggestions.removeAt(0);
-      }
+  updatedSuggestions.remove(event.username);
+  updatedSuggestions.insert(0, event.username);
 
-      emit(state.copyWith(suggestions: updatedSuggestions));
+  if (updatedSuggestions.length > 5) {
+    updatedSuggestions.removeRange(5, updatedSuggestions.length);
+  }
 
-      // Log para depuração
-      print("Sugestões atualizadas: ${updatedSuggestions}");
-    });
+  emit(state.copyWith(suggestions: updatedSuggestions));
+  print("Sugestões atualizadas: ${updatedSuggestions}"); // Log para depuração
+}
+
+
+  @override
+  HomeState? fromJson(Map<String, dynamic> json) {
+    try {
+      return HomeState.fromJson(json);
+    } catch (e) {
+      print("Erro ao carregar estado do JSON: $e");
+      return HomeState();
+    }
   }
 
   @override
-  HomeState? fromJson(Map<String, dynamic> json) => HomeState.fromJson(json);
-
-  @override
-  Map<String, dynamic>? toJson(HomeState state) => state.toJson();
+  Map<String, dynamic>? toJson(HomeState state) {
+    try {
+      return state.toJson();
+    } catch (e) {
+      print("Erro ao salvar estado no JSON: $e");
+      return null;
+    }
+  }
 }
